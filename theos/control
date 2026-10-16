@@ -6,8 +6,8 @@ Description: 京东连点器 (SpringBoard 侧) —— 悬浮球/准星瞄准/10-
 Maintainer: local build
 Author: local build
 Section: Tweaks
-Depends: firmware (>= 15.0), mobilesubstrate
 
 # 说明:
 #   Architecture 由 theos 按 THEOS_PACKAGE_SCHEME 自动改写
 #   (roothide -> iphoneos-arm64e, rootless -> iphoneos-arm64), 这里写的值会被覆盖。
+#   已去除 Depends 依赖，防止无根/隐根环境的包管理器拦截安装。
