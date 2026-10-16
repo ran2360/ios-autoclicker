@@ -1,0 +1,13 @@
+Package: com.autoclicker.jdsb
+Name: JDClickerSB
+Version: 1.0.8
+Architecture: iphoneos-arm64
+Description: 京东连点器 (SpringBoard 侧) —— 悬浮球/准星瞄准/10-30-50 次每秒; 用系统级 HID 注入触摸, 只在京东前台时显示
+Maintainer: local build
+Author: local build
+Section: Tweaks
+Depends: firmware (>= 15.0), mobilesubstrate
+
+# 说明:
+#   Architecture 由 theos 按 THEOS_PACKAGE_SCHEME 自动改写
+#   (roothide -> iphoneos-arm64e, rootless -> iphoneos-arm64), 这里写的值会被覆盖。
