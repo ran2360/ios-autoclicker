@@ -1,7 +1,6 @@
 name: build-tweak
 
 # 在 GitHub 的 macOS runner 上用 theos 构建插件。
-# 必须包含 arm64e 切片，所以必须用 macOS runner。
 
 on:
   push:
@@ -15,7 +14,6 @@ jobs:
   build:
     runs-on: macos-14
     env:
-      # 把工具链放在单独的目录，避免和仓库里的 theos 文件夹冲突
       THEOS: ${{ github.workspace }}/theos-toolchain
 
     steps:
@@ -27,7 +25,6 @@ jobs:
           "$THEOS/bin/install-theos" || true
           ls "$THEOS" | head
 
-      # 【新增】安装 ldid，解决 command not found 问题
       - name: 安装 ldid
         run: brew install ldid
 
@@ -39,7 +36,6 @@ jobs:
 
       - name: 构建 (隐根 + 无根)
         run: |
-          # 【新增】把 theos 的 bin 目录加入 PATH，让系统能找到 ldid
           export PATH="$THEOS/bin:$PATH"
           cd theos
           for scheme in roothide rootless; do
@@ -48,16 +44,14 @@ jobs:
             make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=$scheme
           done
 
+      # 【已修改】不再使用 dpkg-deb，直接检查编译好的 dylib
       - name: 校验产物切片 (必须同时有 arm64 和 arm64e)
         run: |
           cd theos
-          for d in packages/*.deb; do
-            echo "== $d =="
-            dpkg-deb -c "$d" | grep -E 'dylib|plist' || true
-            tmp=$(mktemp -d)
-            dpkg-deb -x "$d" "$tmp"
-            find "$tmp" -name '*.dylib' -exec lipo -info {} \; || true
-            find "$tmp" -name '*.dylib' -exec sh -c 'lipo -detailed_info "$1" | head -30' _ {} \; || true
+          echo "===== 查找所有编译出的 dylib ====="
+          find . -name '*.dylib' | while read -r dylib; do
+            echo "== $dylib =="
+            lipo -detailed_info "$dylib" | head -30 || true
           done
 
       - uses: actions/upload-artifact@v4
